@@ -2,6 +2,7 @@
 title: "Plastic Pollution and its Economic Drivers"
 author: "Jonathan Flores Martinez, Avery Stewart, Justin Mai"
 theme: cerulean
+embed-resources: true
 format: 
   dashboard:
     orientation: columns
