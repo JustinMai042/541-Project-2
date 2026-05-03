@@ -9,6 +9,9 @@ nav-buttons:
       - icon: github
         href: https://github.com/JustinMai042/541-Project-2
         aria-label: GitHub
+      - icon: linkedin
+        href: https://www.linkedin.com/in/justin-mai-1b1ba8255/
+        aria-label: LinkedIn
 logo: plastics.jpeg
 execute: 
   echo: false
