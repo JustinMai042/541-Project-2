@@ -7,7 +7,7 @@ format:
     orientation: columns
 nav-buttons:
       - icon: github
-        href: 
+        href: https://github.com/JustinMai042/541-Project-2
         aria-label: GitHub
 logo: plastics.jpeg
 execute: 
