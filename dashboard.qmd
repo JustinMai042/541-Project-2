@@ -211,6 +211,7 @@ ggplot(mapping = aes(x = reorder(parent_company, total), y = total)) +
 
 
 ```{r}
+#COPY THIS TABLE FOR CHANGE
 library(tidyverse)
 library(plotly)
 library(MASS)
