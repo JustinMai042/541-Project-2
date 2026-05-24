@@ -18,8 +18,9 @@ execute:
   echo: false
   warning: false
   message: false
-server: shiny
 ---
+
+
 # The World
 
 ```{r}
@@ -59,8 +60,8 @@ plastics_clean <- plastics |>
 final_merged <- readRDS("final_merged.rds")
 
 state_gdp <- read_csv("nigeria_state_gdp.csv")
-census <- read_csv("nigera-2020.csv")
 
+census <- read_csv("nigera-2020.csv")
 
 state_gdp_clean <- state_gdp |>
   mutate(State = str_remove(State, " State"))
@@ -95,12 +96,12 @@ plot_this2 <- my_shapefile |>
   left_join(state_gdp_clean, by = join_by(adm1_name == State)) |>
   mutate(gdp_bil_usd = `GDP (bil. US$)`)
 
+
 plot_this3 <- my_shapefile |> 
   left_join(census_clean, by = join_by(adm1_name == State))
-  
-
 
 centroids <- st_centroid(plot_this)
+
 centroids3 <- st_centroid(plot_this3)
 
 
@@ -129,9 +130,6 @@ model_df <- final_merged |>
     log_pop_density = log(pop_density),
     log_gdp_billions = log(gdp_billions)
   ) 
-
-
-
 
 ```
 
@@ -204,7 +202,7 @@ final_merged |>
 :::
 
 ## GDP vs Plastic Types
-::: {.card title="Platic Types by GDP Categories"}
+::: {.card title="Plastic Types by GDP Categories"}
 The plastic type audited in a country may be affected by the country's economic health. This plot differentiates this health by the GDP per Capita metric. Once again often used to denote economic health.
 ```{r}
 #| label: Vizualization-3
@@ -262,7 +260,7 @@ final_merged |>
 
 ## Waste Producers
 ::: {.card title="Economic Drivers = Plastic Waste Generators???"}
-The presence of large corporations withing a country may also affect the plastic produced. This table explores which companies produce the most plastic waste that was audited within a country.
+The presence of large corporations withing a country may also affect the plastic being produced. This table explores which companies produce the most plastic waste that was audited within a country.
 
 ```{r}
 the_7 <- final_merged |> 
@@ -283,11 +281,21 @@ the_7 <- final_merged |>
 ```
 
 ```{r}
-
-
 #COPY THIS TABLE FOR CHANGE
 
 countries <- unique(the_7$country)
+
+palette_colors <- c(
+  "#E69F00",
+  "#009E73",  
+  "#F0E442",  
+  "#56B4E9"   
+)
+
+country_colors <- setNames(
+  rep(palette_colors, length.out = length(countries)),
+  countries
+)
 
 fig <- plot_ly()
 
@@ -304,7 +312,8 @@ for (cty in countries) {
              y = ~parent_company,
              name = cty,
              visible = (cty == countries[1]),
-             orientation = "h")
+             orientation = "h",
+             marker = list(color = country_colors[cty]))
 }
 
 buttons <- lapply(seq_along(countries), function(i) {
@@ -350,11 +359,33 @@ fig
 
 :::
 
-## Environmental Metrics
+:::
+
+
+
+### Column - Model {width="40%"}
+
+#### Row {height="55%"}
+::: panel-tabset 
+
+## Model Description
+::: {.card title="Our Model"}
+
+This mixed effects model examines how population, population density, GDP, year, and geographic region are associated with the amount of plastic collected in cleanup audits. The response variable is the logged total number of plastic items collected for each country/year.
+
+Population, population density, and GDP are also log transformed so the model is more stable rather than the raw units. Region and year are included as fixed effects, while country is included as a random effect to account for repeated observations from the same country across years.
+
+Only log population is statistically significant in the mixed model, suggesting that countries with larger populations tend to have higher audited plastic totals, while population density, GDP, year, and region do not show significant associations after accounting for country level variation.
+
+:::
+
+
+## Exploring the Data
+
 ::: {.card title="Environmental Metrics for 5 Most Populated Countries"}
 
 ```{r}
-#| label: Table Reserch Question 2
+#| label: Table Reserch Question
 #| tbl-cap: "Summary of Plastic Compared to Environmental Indicators for the 5 Most Populated Countries"
 
 final_merged |>
@@ -399,23 +430,10 @@ final_merged |>
   )
 ```
 
-:::
 
 :::
-
-
-
-### Column - Model {width="40%"}
-
-::: {.card title="Our Model"}
-
-This mixed effects model examines how population, population density, GDP, year, and geographic region are associated with the amount of plastic collected in cleanup audits. The response variable is the logged total number of plastic items collected for each country/year.
-
-Population, population density, and GDP are also log transformed so the model is more stable rather than the raw units. Region and year are included as fixed effects, while country is included as a random effect to account for repeated observations from the same country across years.
-
-Only log population is statistically significant in the mixed model, suggesting that countries with larger populations tend to have higher audited plastic totals, while population density, GDP, year, and region do not show significant associations after accounting for country level variation.
-
 :::
+#### row
 ```{r}
 fit_final_maybe <- lmer(
   log_total_plastic ~
@@ -461,11 +479,6 @@ anova(fit_final_maybe) |>
   )
 ```
 
-
-
-
-
-
 # Nigeria
 
 ## Row - Why Nigeria? {height="25%"}
@@ -473,7 +486,7 @@ anova(fit_final_maybe) |>
 ::: {.card title="Why Nigeria?"}
 
 
-Nigeria ranks among the highest contributors to plastic waste in our dataset when summarized over all years. This made it a compelling country for more exploration and understanding other factors that contribute to the high levels of plastic pollution. By focusing on Nigeria, we aim to uncover how environmental conditions and governmental infrastructure may affect the country's plastic waste output.
+Nigeria ranks among the highest contributors to plastic waste in our data set when summarized over all years. It is a very populated country and by the year 2050 it is projected to be the world's third most populated country, only behind India and China. This made it a compelling country for more exploration and understanding other factors that contribute to the high levels of plastic pollution. By focusing on Nigeria, we aim to uncover how economic conditions and population infrastructure may affect the country's plastic waste output. It is important to note that the kg per person per year metric shown in the map was calculated as follows: the total plastic waste collected over the years 2007-2017 and was then divided by the population of each state, then divided by 11 to express it as an annual per-capita figure.
 
 :::
 
@@ -609,7 +622,7 @@ output$map <- renderLeaflet({
     pal <- colorBin(
       palette  = "Purples",
       domain   = plot_this$`Population 2020 projected`,
-      bins     = c(0, 3, 6, 7, 8, 9, 10),
+      bins     = c(0, 3, 6, 7, 8, 9, 10, 17),
       na.color = "grey80"
     )
 
